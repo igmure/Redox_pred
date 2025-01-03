@@ -10,13 +10,14 @@ class DatasetToCSVORO159Class(DatasetToCSVBaseClass):
     """
 
     def parse_xyz_file(
-        self, file_path: str
+        self, file_path: str, charge: int
     ) -> Tuple[Optional[int], Optional[float], Optional[float], Optional[str]]:
         """
         Parses the XYZ file to extract the number of atoms, SCF energy (E), Gibbs free energy (G), and the SMILES string.
 
         Args:
         - file_path: Path to the XYZ file.
+        - charge: Charge of the system.
 
         Returns:
         - A tuple containing:
@@ -46,7 +47,7 @@ class DatasetToCSVORO159Class(DatasetToCSVBaseClass):
             )
 
             # Call xyz_to_smiles function to get the SMILES string
-            smiles = self.xyz_to_smiles(file_path)
+            smiles = self.xyz_to_smiles(file_path, charge=charge)
 
             return num_atoms, e_value, g_value, smiles
 
@@ -97,12 +98,6 @@ class DatasetToCSVORO159Class(DatasetToCSVBaseClass):
         for filename in os.listdir(folder_path):
             if filename.endswith(".xyz"):
                 file_path = os.path.join(folder_path, filename)
-
-                # Parse file data
-                num_atoms, e_value, g_value, smiles = self.parse_xyz_file(
-                    file_path
-                )
-
                 # Extract metadata from the filename
                 (
                     family,
@@ -110,6 +105,12 @@ class DatasetToCSVORO159Class(DatasetToCSVBaseClass):
                     charge,
                     structure_type,
                 ) = self.extract_metadata(filename)
+
+                # Parse file data
+                num_atoms, e_value, g_value, smiles = self.parse_xyz_file(
+                    file_path, charge
+                )
+
 
                 # Initialize the data dictionary if the family-system pair doesn't exist
                 if (family, nFamily) not in data:

@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Tuple, Optional
 from rdkit import Chem
+from rdkit.Chem import rdDetermineBonds, RemoveHs
 import pandas as pd
 
 
@@ -9,7 +10,7 @@ class DatasetToCSVBaseClass(ABC):
     Abstract base class for handling XYZ files and processing them into CSV-compatible data.
     """
 
-    def xyz_to_smiles(self, file_path: str) -> Optional[str]:
+    def xyz_to_smiles(self, file_path: str, charge: int) -> Optional[str]:
         """
         Converts the content of an XYZ file to SMILES format.
 
@@ -20,12 +21,15 @@ class DatasetToCSVBaseClass(ABC):
         - SMILES string if conversion is successful, None otherwise.
         """
         try:
-            with open(file_path, "r") as file:
-                xyz_content = file.read()
-
-            mol = Chem.MolFromXYZBlock(xyz_content)
+            raw_mol = Chem.MolFromXYZFile(file_path)
+            mol = Chem.Mol(raw_mol)
+            if charge != 0:
+                rdDetermineBonds.DetermineBonds(mol, useHueckel=True, charge=charge)
+            else:
+                rdDetermineBonds.DetermineBonds(mol)
+            mol_no_h = RemoveHs(mol)
             if mol:
-                return Chem.MolToSmiles(mol)
+                return Chem.MolToSmiles(mol_no_h, canonical=True, isomericSmiles=False)
         except Exception as e:
             print(f"Error converting XYZ to SMILES for file {file_path}: {e}")
         return None

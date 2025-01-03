@@ -65,7 +65,7 @@ class DatasetToCSVROP313Class(DatasetToCSVBaseClass):
             print(f"Error parsing {file_path}: {e}")
         return None
 
-    def parse_xyz_file(self, file_path: str) -> Tuple[Optional[int], Optional[str]]:
+    def parse_xyz_file(self, file_path: str, charge: int) -> Tuple[Optional[int], Optional[str]]:
         """
         Parses the XYZ file for geometry data.
 
@@ -82,7 +82,7 @@ class DatasetToCSVROP313Class(DatasetToCSVBaseClass):
                 xyz_content = file.readlines()
 
             num_atoms = int(xyz_content[0].strip())
-            smiles = self.xyz_to_smiles(file_path)
+            smiles = self.xyz_to_smiles(file_path, charge)
 
             return num_atoms, smiles
         except (ValueError, IndexError) as e:
@@ -145,7 +145,10 @@ class DatasetToCSVROP313Class(DatasetToCSVBaseClass):
 
                 # Parse XYZ geometries
                 xyz_file_path_1 = os.path.join(folder_path_full, "1.b973c.xyz")
-                num_atoms_1, smiles_1 = self.parse_xyz_file(xyz_file_path_1)
+                if uhf_gn == 0:
+                    num_atoms_1, smiles_1 = self.parse_xyz_file(xyz_file_path_1, charge_gn)
+                else:
+                    num_atoms_1, smiles_1 = self.parse_xyz_file(xyz_file_path_1, charge_rd)
 
                 # Store data for each system
                 data[system_number] = {
