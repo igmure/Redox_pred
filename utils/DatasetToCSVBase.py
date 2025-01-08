@@ -33,6 +33,28 @@ class DatasetToCSVBaseClass(ABC):
         except Exception as e:
             print(f"Error converting XYZ to SMILES for file {file_path}: {e}")
         return None
+    
+    def xyz_to_mol(self, file_path: str, charge: int) -> Optional[str]:
+        """
+        Converts the content of an XYZ file to SMILES format.
+
+        Args:
+        - file_path: Path to the XYZ file.
+
+        Returns:
+        - SMILES string if conversion is successful, None otherwise.
+        """
+        try:
+            raw_mol = Chem.MolFromXYZFile(file_path)
+            mol = Chem.Mol(raw_mol)
+            if charge != 0:
+                rdDetermineBonds.DetermineBonds(mol, useHueckel=True, charge=charge)
+            else:
+                rdDetermineBonds.DetermineBonds(mol)
+            return mol
+        except Exception as e:
+            print(f"Error converting XYZ to mol for file {file_path}: {e}")
+        return None
 
     @abstractmethod
     def parse_xyz_file(

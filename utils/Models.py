@@ -9,13 +9,15 @@ from sklearn.neighbors import KNeighborsRegressor
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 from sklearn.preprocessing import StandardScaler
 import pandas as pd
+import numpy as np
 
 class RegressionModel:
-    def __init__(self, X, y):
+    def __init__(self, X, y, random_state=42):
         """
         Initialize the class.
         X: DataFrame containing the descriptors.
         y: Series or DataFrame with target values to predict.
+        random_state: Seed for random number generators.
         """
         self.X = X
         self.y = y
@@ -23,13 +25,14 @@ class RegressionModel:
         self.best_model = None
         self.metrics = {}
         self.scaler = StandardScaler()
+        self.random_state = random_state
 
-    def split_data(self, test_size=0.2, random_state=42):
+    def split_data(self, test_size=0.2):
         """
         Split data into training and test sets and normalize features.
         """
         self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(
-            self.X, self.y, test_size=test_size, random_state=random_state
+            self.X, self.y, test_size=test_size, random_state=self.random_state
         )
         self.normalize_features()
 
@@ -70,8 +73,8 @@ class RegressionModel:
         Train a Support Vector Regression model using grid search.
         """
         param_grid = {
-            'C': [0.1, 1, 10, 100],
-            'epsilon': [0.01, 0.1, 1]
+            'C': [0.1, 1, 10, 100, 1000],
+            'epsilon': [0.01, 0.1, 1, 10]
         }
         self.train_with_grid_search("SVR", SVR(), param_grid)
 
@@ -80,42 +83,62 @@ class RegressionModel:
         Train a Decision Tree Regression model using grid search.
         """
         param_grid = {
-            'max_depth': [None, 10, 20, 30],
-            'min_samples_split': [2, 5, 10]
+            'max_depth': [None, 10, 20, 30, 40],
+            'min_samples_split': [2, 5, 10, 20]
         }
-        self.train_with_grid_search("DecisionTree", DecisionTreeRegressor(), param_grid)
+        self.train_with_grid_search("DecisionTree", DecisionTreeRegressor(random_state=self.random_state), param_grid)
 
     def train_random_forest(self):
         """
         Train a Random Forest Regression model using grid search.
         """
         param_grid = {
-            'n_estimators': [50, 100, 200],
-            'max_depth': [None, 10, 20, 30],
-            'min_samples_split': [2, 5, 10]
+            'n_estimators': [50, 100, 200, 300],
+            'max_depth': [None, 10, 20, 30, 40],
+            'min_samples_split': [2, 5, 10, 20]
         }
-        self.train_with_grid_search("RandomForest", RandomForestRegressor(), param_grid)
+        self.train_with_grid_search("RandomForest", RandomForestRegressor(random_state=self.random_state), param_grid)
 
     def train_gradient_boosting(self):
         """
         Train a Gradient Boosting Regression model using grid search.
         """
         param_grid = {
-            'n_estimators': [50, 100, 200],
-            'learning_rate': [0.01, 0.1, 0.2],
-            'max_depth': [3, 5, 7]
+            'n_estimators': [50, 100, 200, 300],
+            'learning_rate': [0.01, 0.1, 0.2, 0.3],
+            'max_depth': [3, 5, 7, 9]
         }
-        self.train_with_grid_search("GradientBoosting", GradientBoostingRegressor(), param_grid)
+        self.train_with_grid_search("GradientBoosting", GradientBoostingRegressor(random_state=self.random_state), param_grid)
 
     def train_knn(self):
         """
         Train a K-Nearest Neighbors Regression model using grid search.
         """
         param_grid = {
-            'n_neighbors': [3, 5, 7, 9],
+            'n_neighbors': [3, 5, 7, 9, 11],
             'weights': ['uniform', 'distance']
         }
         self.train_with_grid_search("KNN", KNeighborsRegressor(), param_grid)
+
+    def train_ridge(self):
+        """
+        Train a Ridge Regression model using grid search.
+        """
+        param_grid = {
+            'alpha': [0.01, 0.1, 1, 10, 100, 1000],
+            'max_iter': [1000, 5000, 10000]
+        }
+        self.train_with_grid_search("Ridge", Ridge(), param_grid)
+
+    def train_lasso(self):
+        """
+        Train a Lasso Regression model using grid search.
+        """
+        param_grid = {
+            'alpha': [0.001, 0.01, 0.1, 1, 10, 100],
+            'max_iter': [1000, 5000, 10000]
+        }
+        self.train_with_grid_search("Lasso", Lasso(), param_grid)
 
     def evaluate_model(self, model_name, model):
         """
@@ -206,18 +229,10 @@ class RegressionModel:
         self.train_linear_regression()
         
         # Perform grid search for Ridge Regression
-        self.train_with_grid_search(
-            "Ridge", 
-            Ridge(), 
-            param_grid={"alpha": [0.01, 0.1, 1, 10, 100, 1000]}
-        )
+        self.train_ridge()
         
         # Perform grid search for Lasso Regression
-        self.train_with_grid_search(
-            "Lasso", 
-            Lasso(), 
-            param_grid={"alpha": [0.001, 0.01, 0.1, 1, 10, 100]}
-        )
+        self.train_lasso()
         
         # Train SVR
         self.train_svr()

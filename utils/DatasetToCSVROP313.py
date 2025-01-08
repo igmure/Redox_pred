@@ -147,8 +147,10 @@ class DatasetToCSVROP313Class(DatasetToCSVBaseClass):
                 xyz_file_path_1 = os.path.join(folder_path_full, "1.b973c.xyz")
                 if uhf_gn == 0:
                     num_atoms_1, smiles_1 = self.parse_xyz_file(xyz_file_path_1, charge_gn)
+                    mol = self.xyz_to_mol(xyz_file_path_1, charge_gn)
                 else:
                     num_atoms_1, smiles_1 = self.parse_xyz_file(xyz_file_path_1, charge_rd)
+                    mol = self.xyz_to_mol(xyz_file_path_1, charge_rd)
 
                 # Store data for each system
                 data[system_number] = {
@@ -161,6 +163,7 @@ class DatasetToCSVROP313Class(DatasetToCSVBaseClass):
                     "uhf_rd": uhf_rd,
                     "SMILES": smiles_1,
                     "NumAtoms": num_atoms_1,
+                    "mol": mol,
                 }
 
         # Convert the dictionary to a DataFrame
@@ -176,6 +179,7 @@ class DatasetToCSVROP313Class(DatasetToCSVBaseClass):
                 "UHF_rd": values["uhf_rd"],
                 "SMILES_1": values["SMILES"],
                 "NumAtoms_1": values["NumAtoms"],
+                "mol": values["mol"],
             }
             rows.append(row)
 

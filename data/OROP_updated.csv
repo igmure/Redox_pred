@@ -60,7 +60,7 @@ system_number,dG_red,Solvent,Charge_gn,Charge_rd,UHF_gn,UHF_rd,SMILES_1,NumAtoms
 39,1.98,acetonitrile,1,0,1,0,CC=C(C)C,15,
 120,-2.24,acetonitrile,0,-1,0,1,CC(C)CC=O,16,
 9,1.15,acetonitrile,1,0,1,0,C=Cc1ccc(C)c(C)c1,22,
-124,-1.73,acetonitrile,0,-1,0,1,=Cc1ccc2ccccc2c1,20,
+124,-1.73,acetonitrile,0,-1,0,1,O=Cc1ccc2ccccc2c1,20,
 14,1.48,acetonitrile,1,0,1,0,CC=Cc1ccccc1OC,23,
 115,2.15,acetonitrile,1,0,1,0,Clc1ccc(I)cc1,12,
 183,-0.59,acetonitrile,0,-1,0,1,Cc1cc(C)c(-c2c3ccc(C(C)(C)C)cc3[n+](-c3ccccc3)c3cc(C(C)(C)C)ccc23)c(C)c1.F[B-](F)(F)F,82,
