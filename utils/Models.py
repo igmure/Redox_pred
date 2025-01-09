@@ -40,14 +40,14 @@ class RegressionModel:
         self.X_train = self.scaler.fit_transform(self.X_train)
         self.X_test = self.scaler.transform(self.X_test)
 
-    def train_linear_regression(self):
-        """
-        Train a simple linear regression model and save its metrics.
-        """
-        model = LinearRegression()
-        model.fit(self.X_train, self.y_train)
-        self.models["LinearRegression"] = model
-        self.evaluate_model("LinearRegression", model)
+    # def train_linear_regression(self):
+    #     """
+    #     Train a simple linear regression model and save its metrics.
+    #     """
+    #     model = LinearRegression()
+    #     model.fit(self.X_train, self.y_train)
+    #     self.models["LinearRegression"] = model
+    #     self.evaluate_model("LinearRegression", model)
 
     def train_with_grid_search(self, model_name, model, param_grid):
         """
@@ -203,21 +203,21 @@ class RegressionModel:
         self.split_data()
         
         # Train linear regression
-        self.train_linear_regression()
+        # self.train_linear_regression()
         
-        # Perform grid search for Ridge Regression
-        self.train_with_grid_search(
-            "Ridge", 
-            Ridge(), 
-            param_grid={"alpha": [0.01, 0.1, 1, 10, 100, 1000]}
-        )
+        # # Perform grid search for Ridge Regression
+        # self.train_with_grid_search(
+        #     "Ridge", 
+        #     Ridge(), 
+        #     param_grid={"alpha": [0.01, 0.1, 1, 10, 100, 1000]}
+        # )
         
-        # Perform grid search for Lasso Regression
-        self.train_with_grid_search(
-            "Lasso", 
-            Lasso(), 
-            param_grid={"alpha": [0.001, 0.01, 0.1, 1, 10, 100]}
-        )
+        # # Perform grid search for Lasso Regression
+        # self.train_with_grid_search(
+        #     "Lasso", 
+        #     Lasso(), 
+        #     param_grid={"alpha": [0.001, 0.01, 0.1, 1, 10, 100]}
+        # )
         
         # Train SVR
         self.train_svr()
