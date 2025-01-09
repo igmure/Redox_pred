@@ -53,7 +53,7 @@ def generate_2D_descriptors(mol):
     return descriptors
 
 
-def generate_descriptors(mol, row, number, red):
+def generate_descriptors(mol, row, number, red, chr, chg):
     if mol is None:
         return None
 
@@ -61,6 +61,8 @@ def generate_descriptors(mol, row, number, red):
     rdkit_descriptors = {
         'System_number': number,
         'dG_red': red,
+        'Charge_gn': chg,
+        'Charge_rd': chr,
         'MolWt': Descriptors.MolWt(mol),
         'NumAtoms': mol.GetNumAtoms(),
         'NumHeteroatoms': Descriptors.NumHeteroatoms(mol),
