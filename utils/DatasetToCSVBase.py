@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Tuple, Optional
 from rdkit import Chem
-from rdkit.Chem import rdDetermineBonds, RemoveHs
+from rdkit.Chem import rdDetermineBonds, RemoveHs, AllChem
 import pandas as pd
 
 
@@ -28,6 +28,7 @@ class DatasetToCSVBaseClass(ABC):
             else:
                 rdDetermineBonds.DetermineBonds(mol)
             mol_no_h = RemoveHs(mol)
+            
             if mol:
                 return Chem.MolToSmiles(mol_no_h, canonical=True, isomericSmiles=False)
         except Exception as e:
@@ -36,7 +37,7 @@ class DatasetToCSVBaseClass(ABC):
     
     def xyz_to_mol(self, file_path: str, charge: int) -> Optional[str]:
         """
-        Converts the content of an XYZ file to SMILES format.
+        Converts the content of an XYZ file to mol (geometry optimized by forcefield not from xyz:( )
 
         Args:
         - file_path: Path to the XYZ file.
@@ -45,12 +46,25 @@ class DatasetToCSVBaseClass(ABC):
         - SMILES string if conversion is successful, None otherwise.
         """
         try:
-            raw_mol = Chem.MolFromXYZFile(file_path)
-            mol = Chem.Mol(raw_mol)
+            mol = Chem.MolFromXYZFile(file_path)
+            
+            if mol is None:
+                print(f"Failed to load molecule from XYZ file: {file_path}")
+                return None
+            rdDetermineBonds.DetermineBonds(mol)
+            # Embed the molecule in 3D space
+            AllChem.EmbedMolecule(mol, AllChem.ETKDG())
+
+            # Set formal charges if necessary
             if charge != 0:
-                rdDetermineBonds.DetermineBonds(mol, useHueckel=True, charge=charge)
-            else:
-                rdDetermineBonds.DetermineBonds(mol)
+                for atom in mol.GetAtoms():
+                    atom.SetFormalCharge(charge)
+
+            # # Optimize geometry using MMFF forcefield
+            # if not AllChem.MMFFOptimizeMolecule(mol):
+            #     print(f"Geometry optimization failed for molecule: {file_path}")
+            #     return None
+
             return mol
         except Exception as e:
             print(f"Error converting XYZ to mol for file {file_path}: {e}")

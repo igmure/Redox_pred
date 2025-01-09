@@ -202,7 +202,8 @@ class RegressionModel:
                 print(f"Model {model_name} does not have feature importances or coefficients.")
                 continue
             
-            feature_names = self.X.columns
+            # Convert self.X to DataFrame to access column names
+            feature_names = pd.DataFrame(self.X).columns
             feature_importances = pd.Series(importances, index=feature_names)
             feature_importances = feature_importances.sort_values(ascending=False).head(10)
             
@@ -213,7 +214,7 @@ class RegressionModel:
 
     def run(self):
         self.split_data()
-        self.train_linear_regression()
+        # #self.train_linear_regression()
         self.train_ridge()
         self.train_lasso()
         self.train_elastic_net()
