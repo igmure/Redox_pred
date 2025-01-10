@@ -36,11 +36,6 @@ class RegressionModel:
         self.X_train = self.scaler.fit_transform(self.X_train)
         self.X_test = self.scaler.transform(self.X_test)
 
-    def train_linear_regression(self):
-        model = LinearRegression()
-        model.fit(self.X_train, self.y_train)
-        self.models["LinearRegression"] = model
-        self.evaluate_model("LinearRegression", model)
 
     def train_with_grid_search(self, model_name, model, param_grid):
         grid_search = GridSearchCV(model, param_grid, cv=5, scoring="neg_mean_squared_error", n_jobs=-1)
@@ -236,10 +231,23 @@ class RegressionModel:
 
     def run(self):
         self.split_data()
-        # #self.train_linear_regression()
-        self.train_ridge()
-        self.train_lasso()
-        self.train_elastic_net()
+    
+        
+        # Perform grid search for Ridge Regression
+        self.train_with_grid_search(
+            "Ridge", 
+            Ridge(), 
+            param_grid={"alpha": [0.01, 0.1, 1, 10, 100, 1000]}
+        )
+        
+        # Perform grid search for Lasso Regression
+        self.train_with_grid_search(
+            "Lasso", 
+            Lasso(), 
+            param_grid={"alpha": [0.001, 0.01, 0.1, 1, 10, 100]}
+        )
+        
+        # Train SVR
         self.train_svr()
         self.train_decision_tree()
         self.train_random_forest()

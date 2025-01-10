@@ -70,6 +70,33 @@ class DatasetToCSVBaseClass(ABC):
             print(f"Error converting XYZ to mol for file {file_path}: {e}")
         return None
 
+    
+    def sdf_to_mol(self, file_path: str) -> Optional[str]:
+        """
+        Converts the content of an sdf file to SMILES format.
+
+        Args:
+        - file_path: Path to the sdf file.
+
+        Returns:
+        - SMILES string if conversion is successful, None otherwise.
+        """
+        try:
+            mol_supplier = Chem.SDMolSupplier(file_path)
+            mol = mol_supplier[0]
+            return mol
+            # mol = Chem.Mol(mol)
+            
+            # if charge != 0:
+            #     rdDetermineBonds.DetermineBonds(mol, useHueckel=True, charge=charge)
+            # else:
+            #     rdDetermineBonds.DetermineBonds(mol)
+            # mol_no_h = RemoveHs(mol)
+            # return mol
+        except Exception as e:
+            print(f"Error converting sdf to mol for file {file_path}: {e}")
+        return None
+    
     @abstractmethod
     def parse_xyz_file(
         self, file_path: str
