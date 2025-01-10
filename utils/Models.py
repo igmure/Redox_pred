@@ -1,21 +1,26 @@
+import os
+import pickle
+
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 import seaborn as sns
-from sklearn.model_selection import train_test_split, GridSearchCV
-from sklearn.linear_model import LinearRegression, Ridge, Lasso, ElasticNet
+from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor
+from sklearn.linear_model import ElasticNet, Lasso, LinearRegression, Ridge
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+from sklearn.model_selection import GridSearchCV, train_test_split
+from sklearn.neighbors import KNeighborsRegressor
+from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVR
 from sklearn.tree import DecisionTreeRegressor
-from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
-from sklearn.neighbors import KNeighborsRegressor
-from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
-from sklearn.preprocessing import StandardScaler
-import pandas as pd
-import numpy as np
+
 
 class RegressionModel:
     def __init__(self, X, y, random_state=42):
         self.X = X
         self.y = y
         self.models = {}
+        self.model_scores = {}
         self.best_model = None
         self.metrics = {}
         self.scaler = StandardScaler()
@@ -48,14 +53,14 @@ class RegressionModel:
     def train_lasso(self):
         param_grid = {
             'alpha': [0.01, 0.1, 1, 10, 100],
-            'max_iter': [5000, 10000, 20000]
+            'max_iter': [10000, 20000]
         }
         self.train_with_grid_search("Lasso", Lasso(), param_grid)
 
     def train_ridge(self):
         param_grid = {
             'alpha': [0.1, 1, 10, 100, 1000],
-            'max_iter': [5000, 10000, 20000]
+            'max_iter': [10000, 20000]
         }
         self.train_with_grid_search("Ridge", Ridge(), param_grid)
 
@@ -63,7 +68,7 @@ class RegressionModel:
         param_grid = {
             'alpha': [0.01, 0.1, 1, 10, 100],
             'l1_ratio': [0.1, 0.3, 0.5, 0.7, 0.9],
-            'max_iter': [5000, 10000, 20000]
+            'max_iter': [10000, 20000]
         }
         self.train_with_grid_search("ElasticNet", ElasticNet(), param_grid)
 
@@ -125,12 +130,29 @@ class RegressionModel:
             "Test MAE": test_mae,
             "Test R2": test_r2
         }
+        self.model_scores[model_name] = test_r2
+        print(f"Model {model_name} R²: {test_r2}")
 
     def find_best_model(self):
-        best_model_name = max(self.metrics, key=lambda name: self.metrics[name]["Test R2"])
-        self.best_model = self.models[best_model_name]
-        return best_model_name, self.metrics[best_model_name]
-
+        best_model_name = max(self.model_scores, key=self.model_scores.get)
+        best_metrics = self.metrics[best_model_name]
+        return best_model_name, best_metrics
+    
+    def save_best_model(self):
+        best_model_name = max(self.metrics, key=lambda k: self.metrics[k]["Test R2"])
+        best_model = self.models[best_model_name]
+        
+        # Get the number of existing files in the directory
+        directory = "data/models"
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+        existing_files = os.listdir(directory)
+        file_number = len(existing_files) + 1
+        
+        file_path = f"{directory}/{best_model_name}_{file_number}.pkl"
+        with open(file_path, 'wb') as f:
+            pickle.dump(best_model, f)
+        print(f"Best model {best_model_name} saved to {file_path}")
 
     def visualize_metrics(self):
         metrics_df = pd.DataFrame(self.metrics).T
@@ -226,6 +248,7 @@ class RegressionModel:
         best_model_name, best_metrics = self.find_best_model()
         print(f"Best model: {best_model_name}")
         print(f"Metrics: {best_metrics}")
+        self.save_best_model()
         self.visualize_metrics()
         self.plot_predictions()
         self.plot_feature_importances()
