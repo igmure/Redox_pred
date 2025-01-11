@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Tuple, Optional
 from rdkit import Chem
-from rdkit.Chem import rdDetermineBonds, RemoveHs
+from rdkit.Chem import rdDetermineBonds, RemoveHs, AllChem
 import pandas as pd
 
 
@@ -28,12 +28,75 @@ class DatasetToCSVBaseClass(ABC):
             else:
                 rdDetermineBonds.DetermineBonds(mol)
             mol_no_h = RemoveHs(mol)
+            
             if mol:
                 return Chem.MolToSmiles(mol_no_h, canonical=True, isomericSmiles=False)
         except Exception as e:
             print(f"Error converting XYZ to SMILES for file {file_path}: {e}")
         return None
+    
+    def xyz_to_mol(self, file_path: str, charge: int) -> Optional[str]:
+        """
+        Converts the content of an XYZ file to mol (geometry optimized by forcefield not from xyz:( )
 
+        Args:
+        - file_path: Path to the XYZ file.
+
+        Returns:
+        - SMILES string if conversion is successful, None otherwise.
+        """
+        try:
+            mol = Chem.MolFromXYZFile(file_path)
+            
+            if mol is None:
+                print(f"Failed to load molecule from XYZ file: {file_path}")
+                return None
+            rdDetermineBonds.DetermineBonds(mol)
+            # Embed the molecule in 3D space
+            AllChem.EmbedMolecule(mol, AllChem.ETKDG())
+
+            # Set formal charges if necessary
+            if charge != 0:
+                for atom in mol.GetAtoms():
+                    atom.SetFormalCharge(charge)
+
+            # # Optimize geometry using MMFF forcefield
+            # if not AllChem.MMFFOptimizeMolecule(mol):
+            #     print(f"Geometry optimization failed for molecule: {file_path}")
+            #     return None
+
+            return mol
+        except Exception as e:
+            print(f"Error converting XYZ to mol for file {file_path}: {e}")
+        return None
+
+    
+    def sdf_to_mol(self, file_path: str) -> Optional[str]:
+        """
+        Converts the content of an sdf file to SMILES format.
+
+        Args:
+        - file_path: Path to the sdf file.
+
+        Returns:
+        - SMILES string if conversion is successful, None otherwise.
+        """
+        try:
+            mol_supplier = Chem.SDMolSupplier(file_path)
+            mol = mol_supplier[0]
+            return mol
+            # mol = Chem.Mol(mol)
+            
+            # if charge != 0:
+            #     rdDetermineBonds.DetermineBonds(mol, useHueckel=True, charge=charge)
+            # else:
+            #     rdDetermineBonds.DetermineBonds(mol)
+            # mol_no_h = RemoveHs(mol)
+            # return mol
+        except Exception as e:
+            print(f"Error converting sdf to mol for file {file_path}: {e}")
+        return None
+    
     @abstractmethod
     def parse_xyz_file(
         self, file_path: str
