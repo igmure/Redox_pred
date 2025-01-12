@@ -4,4 +4,4 @@ Potencjały redoks dla reakcji jednoelektronowych odgrywają kluczową rolę w w
 
 Szczegółowy przebieg eksperymentów dostępny w pliku model.ipynb.
 
-Wizualizacja danych dostępna w VALUES_SMILES.ipynb
+Wizualizacja danych dostępna w pliku VALUES_SMILES.ipynb
