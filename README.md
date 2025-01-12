@@ -1,4 +1,4 @@
-### Redox_pred: Przewidywanie potencjałów redoks za pomocą uczenia maszynowego  
+### Redox_pred: Badanie wpływu deskryptorów molekularnych na przewidywanie potencjału redoks za pomocą metod ML  
 
 Potencjały redoks dla reakcji jednoelektronowych odgrywają kluczową rolę w wielu dziedzinach, takich jak kataliza, magazynowanie energii czy procesy biologiczne. Tradycyjne metody oparte na teorii funkcjonałów gęstości (DFT) pozwalają na dokładne przewidywanie potencjałów redoks, lecz są czasochłonne i kosztowne obliczeniowo, dlatego coraz częściej stosuje się metody uczenia maszynowego.  
 
