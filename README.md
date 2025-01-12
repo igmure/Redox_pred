@@ -12,8 +12,8 @@ Wyniki podkreślają znaczenie wyboru deskryptorów w modelowaniu właściwości
 
 ### Istotne pliki  
 
-- **Szczegółowy przebieg eksperymentów**: [model.ipynb](#)  
+- **Szczegółowy przebieg eksperymentów**: [model.ipynb](https://github.com/igmure/Redox_pred/blob/main/model.ipynb)  
   Zawiera kompletny przebieg eksperymentów i proces trenowania modeli.  
 
-- **Wizualizacja danych**: [VALUES_SMILES.ipynb](#)  
+- **Wizualizacja danych**: [VALUES_SMILES.ipynb](https://github.com/igmure/Redox_pred/blob/main/VALUES_SMILES.ipynb)  
   Obejmuje wizualizacje zbioru danych oraz analizę deskryptorów.  
