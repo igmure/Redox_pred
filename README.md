@@ -10,7 +10,7 @@ Wyniki podkreślają znaczenie wyboru deskryptorów w modelowaniu właściwości
 
 ---
 
-### Pliki projektu  
+### Istotne pliki  
 
 - **Szczegółowy przebieg eksperymentów**: [model.ipynb](#)  
   Zawiera kompletny przebieg eksperymentów i proces trenowania modeli.  
